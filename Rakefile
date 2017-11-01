@@ -23,6 +23,11 @@ namespace :react do
   desc 'Run the JS build process to put files in the gem source'
   task update: [:install, :build, :copy]
 
+  desc 'Install the JavaScript dependencies'
+  task :install do
+    yarn_run_in('react-builds', 'upgrade')
+  end
+
   desc 'Build the JS bundles with Webpack'
   task :build do
     yarn_run_in('react-builds', 'build')
@@ -32,19 +37,9 @@ namespace :react do
   task :copy do
     environments = ['development', 'production']
     environments.each do |environment|
-      # Without addons:
       copy_react_asset("#{environment}/react-browser.js", "#{environment}/react.js")
       copy_react_asset("#{environment}/react-server.js", "#{environment}/react-server.js")
-
-      # With addons:
-      copy_react_asset("#{environment}/react-browser-with-addons.js", "#{environment}-with-addons/react.js")
-      copy_react_asset("#{environment}/react-server-with-addons.js", "#{environment}-with-addons/react-server.js")
     end
-  end
-
-  desc 'Install the JavaScript dependencies'
-  task :install do
-    yarn_run_in('react-builds', 'upgrade')
   end
 end
 
@@ -54,12 +49,12 @@ namespace :ujs do
 
   desc 'Install the JavaScript dependencies'
   task :install do
-    yarn_run_in('react_ujs', 'upgrade')
+    `yarn upgrade`
   end
 
   desc 'Build the JS bundles with Webpack'
   task :build do
-    yarn_run_in('react_ujs', 'build')
+    `yarn build`
   end
 
   desc "Copy browser-ready JS files to the gem's asset paths"
@@ -71,9 +66,7 @@ namespace :ujs do
 
   desc 'Publish the package in ./react_ujs/ to npm as `react_ujs`'
   task publish: :update do
-    Dir.chdir('react_ujs') do
-      `npm publish`
-    end
+    `npm publish`
   end
 end
 
